@@ -2,4 +2,13 @@
 NODE_VERSION = "20"
 
 [phases.setup]
-nixPkgs = ["nodejs_20", "nodePackages.npm"]
+nixPkgs = ["nodejs_20", "nodePackages.pnpm"]
+
+[phases.install]
+cmd = "pnpm install --frozen-lockfile --prod=false"
+
+[phases.build]
+cmd = "pnpm run build"
+
+[start]
+cmd = "pnpm run start:prod"
