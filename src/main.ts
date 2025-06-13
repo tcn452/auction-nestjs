@@ -6,6 +6,15 @@ import {
   NestExpressApplication,
 } from '@nestjs/platform-express'; // Using Express platform
 
+// Ensure crypto is available
+import { randomUUID } from 'node:crypto';
+if (!globalThis.crypto) {
+  globalThis.crypto = {
+    randomUUID,
+    // Add other crypto methods if needed
+  } as any;
+}
+
 async function bootstrap() {
   // Use Express adapter for NestJS
   const app = await NestFactory.create<NestExpressApplication>(
