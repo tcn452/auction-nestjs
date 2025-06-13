@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config'; // For environment variable manag
 import { ScheduleModule } from '@nestjs/schedule'; // For scheduling tasks
 import { AuctionModule } from './auction/auction.module'; // Import your Auction module
 import { AuthModule } from './auth/auth.module'; // Import your Auth module
-import { PocketBaseModule } from './pocketbase/pocketbase.module'; // Import PocketBase module
+
 import { DirectusModule } from './directus/directus.module';
 
 @Module({
@@ -14,7 +14,6 @@ import { DirectusModule } from './directus/directus.module';
       isGlobal: true, // Make config available globally
     }),
     ScheduleModule.forRoot(), // Initialize scheduler
-    PocketBaseModule, // Register PocketBase module
     AuthModule, // Register Auth module
     AuctionModule,
     DirectusModule, // Register Auction module

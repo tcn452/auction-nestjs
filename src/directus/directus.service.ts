@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-// src/directus/directus.service.ts
+
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import {
+  aggregate,
+  createItem,
   createDirectus,
   rest,
   staticToken,
@@ -140,7 +141,7 @@ export class DirectusService implements OnModuleInit {
     } catch (error: any) {
       this.logger.error(
         `Error reading item ${id} from ${String(collection)}:`,
-        error.message,
+        JSON.stringify(error, null, 2),
       );
       throw error; // Re-throw the error
     }
@@ -178,6 +179,63 @@ export class DirectusService implements OnModuleInit {
       throw error; // Re-throw the error for the calling service to handle
     }
   }
+  /**
+   * Wraps the Directus SDK's createItem function.
+   * @param collection The collection name.
+   * @param item The item data to create.
+   * @returns A promise resolving to the created item of type T.
+   */
+  async createItem<Collection extends keyof any, T = any>(
+    collection: Collection,
+    item: Partial<T>,
+  ): Promise<T> {
+    this.logger.debug(
+      `Creating item in collection: ${String(collection)} with data: ${JSON.stringify(item)}`,
+    );
+    try {
+      const createdItem = await this.directus.request(
+        createItem<any, any, any>(String(collection), item),
+      );
+      this.logger.debug(
+        `Successfully created item in ${String(collection)}.`,
+      );
+      return createdItem as T;
+    } catch (error: any) {
+      this.logger.error(
+        `Error creating item in ${String(collection)}:`,
+        error.message,
+      );
+      throw error; // Re-throw the error
+    }
+  }
+
+  async aggregate<Collection extends keyof any>(
+    collection: Collection,
+    options: {
+      query?: any;
+      aggregate: any;
+    },
+  ): Promise<{ [key: string]: number | string }[]> {
+    this.logger.debug(
+      `Aggregating data from collection: ${String(collection)} with options: ${JSON.stringify(options)}`,
+    );
+    try {
+      const result = await this.directus.request(
+        aggregate<any, any, any>(String(collection), options),
+      );
+      this.logger.debug(
+        `Successfully aggregated data from ${String(collection)}.`,
+      );
+      return result as { [key: string]: number | string }[];
+    } catch (error: any) {
+      this.logger.error(
+        `Error aggregating data from ${String(collection)}:`,
+        error.message,
+      );
+      throw error; // Re-throw the error
+    }
+  }
+
 
   // Add other methods as needed (e.g., createItem, deleteItem, etc.)
 }
